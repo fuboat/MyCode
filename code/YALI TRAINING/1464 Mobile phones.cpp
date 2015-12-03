@@ -1,44 +1,44 @@
-#include <iostream>
 #include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <algorithm>
-using namespace std;
-
+#define lowbit(pos) (pos & -pos)
 #define REP(i, x, y) for(int i = x, _ = y; i <= _; i ++)
-#define Rep(i, x, y) for(int i = x, _ = y; i >= _; i --)
-#define LL long long
-template <typename T> bool chkmin(T &x, T y){return y < x? (x = y, true) : false;}
-template <typename T> bool chkmax(T &x, T y){return y > x? (x = y, true) : false;}
 const int MAXN = 1024;
 int n;
 struct fenwick{
-	int f[MAXN + 100][MAXN + 100];
-	void add(int x, int y, int d){
-		int now = x;
-		while(now <= n){
-			int tmp = y;
-			while(tmp <= n){
-				f[now][tmp] += d;
-				tmp += tmp & -tmp;
-			}
-			now += now & -now;
+	int f[MAXN + 100];
+	void add(int pos, int d){
+		while(pos <= n){
+			f[pos] += d;
+			pos += lowbit(pos);
 		}
 	}
 	
-	int query(int x, int y){
-		int now = x, sum = 0;
-		while(now > 0){
-			int tmp = y;
-			while(tmp > 0){
-				sum += f[now][tmp];
-				tmp -= tmp & -tmp;
-			}
-			now -= now & -now;
+	int query(int pos){
+		int sum = 0;
+		while(pos > 0){
+			sum += f[pos];
+			pos -= lowbit(pos);
 		}
 		return sum;
 	}
-}t;
+}t[MAXN + 100];
+
+void add(int x, int y, int d)
+{
+	while(x <= n){
+		t[x].add(y, d);
+		x += lowbit(x);
+	}
+}
+
+int query(int x, int y)
+{
+	int sum = 0;
+	while(x > 0){
+		sum += t[x].query(y);
+		x -= lowbit(x);
+	}
+	return sum;
+}
 
 int main()
 {
@@ -49,12 +49,13 @@ int main()
 			case 1:
 			scanf("%d%d%d", &x, &y, &d);
 			x ++, y ++;
-			t.add(x, y, d);
+			add(x, y, d);
 			break;
 			case 2:
 			scanf("%d%d%d%d", &xl, &yl, &xr, &yr);
 			xl ++, yl ++, xr ++, yr ++;
-			printf("%d\n", t.query(xr, yr) - t.query(xl - 1, yr) - t.query(xr, yl - 1) + t.query(xl - 1, yl - 1));
+			printf("%d\n", query(xr, yr) - query(xl - 1, yr) - query(xr, yl - 1) + query(xl - 1, yl - 1));
 		}
 	}
+	return 0;
 }

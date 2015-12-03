@@ -51,11 +51,11 @@ void solve()
 		}
 	printf("%d\n%d\n", cnt, S);
 	REP(j, 1, m) rep(i, n, 1){
-			if(j != 1 && sta[i][j][0] && num[i][j] != num[i + d[0][0]][j + d[0][1]] && chkmax(ans, s[num[i][j]] + s[num[i + d[0][0]][j + d[0][1]]]))
-				X = i, Y = j - 1, D = 'E';
-			if(i != n && sta[i][j][3] && num[i][j] != num[i + d[3][0]][j + d[3][1]] && chkmax(ans, s[num[i][j]] + s[num[i + d[3][0]][j + d[3][1]]]))
-				X = i + 1, Y = j, D = 'N';
-		}
+		if(j != 1 && sta[i][j][0] && num[i][j] != num[i + d[0][0]][j + d[0][1]] && chkmax(ans, s[num[i][j]] + s[num[i + d[0][0]][j + d[0][1]]]))
+			X = i, Y = j - 1, D = 'E';
+		if(i != n && sta[i][j][3] && num[i][j] != num[i + d[3][0]][j + d[3][1]] && chkmax(ans, s[num[i][j]] + s[num[i + d[3][0]][j + d[3][1]]]))
+			X = i + 1, Y = j, D = 'N';
+	}
 	printf("%d\n%d %d %c\n", ans, X, Y, D);
 }
 
