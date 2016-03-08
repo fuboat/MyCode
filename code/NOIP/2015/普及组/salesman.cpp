@@ -46,14 +46,12 @@ int main()
 		e[i].P = i;
 	}
 	sort(e + 1, e + n + 1, cmp);
-	int beg = 1;
-	int ans = 0;
-	int last = 0;
+	int beg(1), ans(0), last(0), maxa;
 	REP(i, 1, n){
-		if(d.empty() || (beg <= n && !ok[beg] && d.top() < e[beg].W)){
-			pii tmp = e[beg];
+		maxa = a[e[beg].P] + (s[e[beg].P] - s[last]) * 2;
+		if(d.empty() || (beg <= n && d.top() < maxa)){
+			ans += maxa;
 			ok[e[beg].P] = 1;
-			ans += a[e[beg].P] + (s[e[beg].P] - s[last]) * 2;
 			last = e[beg].P;
 			REP(j, beg + 1, n)
 				if(e[j].P < e[beg].P && !ok[e[j].P]){

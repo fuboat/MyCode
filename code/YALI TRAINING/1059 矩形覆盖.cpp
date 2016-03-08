@@ -49,8 +49,10 @@ void dfs(int has)
 		update();
 		return ;
 	}
+	
 	REP(i, 1, n){
 		int tmp[MAXN + 10] = {0}, cnt = 0, now = num[i];
+		
 		REP(j, 1, n)
 			if(num[j] == now && s[j].x < s[i].x){
 				num[j] ++;
@@ -58,7 +60,9 @@ void dfs(int has)
 			}
 		dfs(has + 1);
 		REP(j, 1, cnt) num[tmp[j]] = now;
+		
 		cnt = 0;
+		
 		REP(j, 1, n)
 			if(num[j] == now && s[j].y < s[i].y){
 				num[j] ++;

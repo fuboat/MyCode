@@ -13,9 +13,7 @@ using std::pair;
 using std::make_pair;
 
 double cj(pdd a, pdd b){return a.X * b.Y - a.Y * b.X;}
-
 double cross(pdd o, pdd a, pdd b){return cj(MK(o.X - a.X, o.Y - a.Y), MK(o.X - b.X, o.Y - b.Y));}
-
 double dis(pdd a, pdd b){return sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));}
 
 

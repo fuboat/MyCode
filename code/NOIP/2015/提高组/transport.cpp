@@ -1,66 +1,46 @@
 #include <cstdio>
 #include <cmath>
-
-int readin()
-{
-	int x = 0;bool flag = 0;char c = 0;
-	while(c = getchar()){
-		if(c == '-'){
-			return -readin();
-		}
-		if(c >= '0'&&c <= '9'){
-			x = x * 10 + c - '0';
-			flag = 1;
-		}
-		else if(flag)  return x;
-	}
-}
-
 #define REP(i, x, y) for(int i = x, _ = y; i <= _; i ++)
-#define Rep(i, x, y) for(int i = x, _ = y; i >= _; i --)
+#define rep(i, x, y) for(int i = x, _ = y; i >= _; i --)
 bool chkmin(int &x, int y){return y < x? (x = y, true) : false;}
 bool chkmax(int &x, int y){return y > x? (x = y, true) : false;}
-
-const int MAXN = 300000, MAXM = 300000, MAXD = 20;
-struct edge{
-	int to, w, nxt;
-}s[MAXN * 3];
-
-struct Que{
-	int l, r, lca, far;
-}que[MAXN + 100];
-
-struct About{
-	int list, with, nxt;
-}about[MAXN * 3];
-
-int pre[MAXN + 100], aft[MAXN + 100], d[MAXN + 100], f[MAXN + 100], p[MAXN + 100], dis[MAXN + 100], root[MAXN + 100];
-int s_cnt, about_cnt;
-bool vis[MAXN + 100];
-
-int find(int x)
+void readin(int &x)
 {
-	if(x != f[x]) f[x] = find(f[x]);
-	return f[x];
+	x = 0;
+	char c = 0;
+	do c = getchar();
+	while(c < '0' || c > '9');
+	do{
+		(x *= 10) += c - '0';
+		c = getchar();
+	}while(c >= '0' && c <= '9');
 }
- 
-int dfs[MAXN + 100], dfs_cnt; //The turn of dfs
-int m, n, maxl, maxL, bb, maxd;
 
+const int MAXN = 300000 + 100, MAXM = 300000 + 100;
+struct edge{ int to, w, nxt; };
+struct Que{ int l, r, lca, far; };
+struct About{ int list, with, nxt; };
+
+int pre[MAXN], s_cnt;
+edge s[MAXN << 1];
 void add(int from, int to, int len)
 {
-	s_cnt ++;
-	s[s_cnt] = (edge){to, len, pre[from]};
+	s[++ s_cnt] = (edge){to, len, pre[from]};
 	pre[from] = s_cnt;
 }
 
+int aft[MAXN], about_cnt;
+About about[MAXN << 1];
 void Add(int from, int to, int i)
 {
-	about_cnt ++;
-	about[about_cnt] = (About){to, i, aft[from]};
+	about[++ about_cnt] = (About){to, i, aft[from]};
 	aft[from] = about_cnt;
 }
 
+bool vis[MAXN];
+int dfs[MAXN], f[MAXN], p[MAXN], dis[MAXN], root[MAXN], dfs_cnt; //The turn of dfs
+Que que[MAXM];
+int find(int x){ return x == f[x]? f[x] : f[x] = find(f[x]); }
 void tarjan(int now)
 {
 	dfs[++ dfs_cnt] = now;
@@ -68,38 +48,36 @@ void tarjan(int now)
 	f[now] = now;
 	for(int i = aft[now]; i; i = about[i].nxt){
 		int nxt = about[i].list;
-		if(vis[nxt])
-			que[about[i].with].lca = find(nxt);
+		if(vis[nxt]) que[about[i].with].lca = find(nxt);
 	}
 	for(int i = pre[now]; i; i = s[i].nxt){
-		int to = s[i].to;
+		int to = s[i].to, w = s[i].w;
 		if(!vis[to]){
 			p[to] = now;
-			d[to] = d[now] + 1;
-			dis[to] = s[i].w;
-			root[to] = root[now] + dis[to];
+			dis[to] = w;
+			root[to] = root[now] + w;
 			tarjan(to);
 			f[to] = now;
 		}
 	}
 }
-		
+
+int m, n, maxl;
 void Init()
 {
 	int from, to, len;
-	n = readin();
-	m = readin();
+	readin(n);
+	readin(m);
 	REP(i, 1, n - 1){
-		from = readin();
-		to = readin();
-		len = readin();
+		readin(from);
+		readin(to);
+		readin(len);
 		add(from, to, len);
 		add(to, from, len);
-		chkmax(maxL, len);
 	}
 	REP(i, 1, m){
-		from = readin();
-		to = readin();
+		readin(from);
+		readin(to);
 		que[i].l = from; 
 		que[i].r = to;
 		Add(from, to, i);
@@ -108,26 +86,12 @@ void Init()
 	tarjan(1);
 	REP(i, 1, m){
 		Que &now = que[i];
-		now.far = root[now.l] + root[now.r] - (root[now.lca] << 1);
-		chkmax(maxl, now.far);
+		chkmax(maxl, now.far = root[now.l] + root[now.r] - (root[now.lca] << 1));
 	}
 }
 
-void  Begin()
+bool Check(int len)
 {
-	freopen("transport.in", "r", stdin);
-	freopen("transport.out", "w", stdout);
-}
-
-void End()
-{
-	fclose(stdin);
-	fclose(stdout);
-}
-
-bool is_OK(int len)
-{
-	bool flag = 0;
 	int ok[MAXN + 100]= {0}, num = 0;
 	REP(i, 1, m){
 		Que now = que[i];
@@ -137,37 +101,27 @@ bool is_OK(int len)
 			ok[now.l] ++; ok[now.r] ++;
 		}
 	}
-	Rep(j, n, 1){
-		int now = dfs[j];
-		for(int i = pre[now]; i; i = s[i].nxt){
-			int to = s[i].to;
-			if(to != p[now]) ok[now] += ok[to];
-		}
-		if(ok[now] == num){
-			if(maxl - dis[now] <= len) return 1;
-			while((ok[p[now]] += ok[now]) == num && (now != bb)){
-				now = p[now];
-				if(maxl - dis[now] <= len) return 1;
-			}
-			return 0;
-		}
+	rep(j, n, 1){
+		int now = dfs[j], w = ok[now];
+		if(w == num && maxl - dis[now] <= len) return 1;
+		ok[p[now]] += w;
 	}
 	return 0;
 }
 
 int Solve()
 {
-	int l = maxl - 1000, r = maxl, ans, mid;
-	if(l < 0) l = 0;
-	while(l < r){
+	int l = maxl - 1001, r = maxl, ans, mid;
+	if(l < 0) l = -1;
+	while(l + 1 < r){
 		mid = (l + r) >> 1;
-		if(is_OK(mid))
-			r = mid;
-		else l = mid + 1;
+		if(Check(mid)) r = mid;
+		else l = mid;
 	}
-	return l;
+	return r;
 }
 
+void Begin(), End();
 int main()
 {
 	//Begin();
@@ -175,4 +129,15 @@ int main()
 	printf("%d\n", Solve());
 	//End();
 	return 0;
+}
+
+void Begin()
+{
+	freopen("transport.in", "r", stdin);
+	freopen("transport.out", "w", stdout);
+}
+void End()
+{
+	fclose(stdin);
+	fclose(stdout);
 }

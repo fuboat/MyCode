@@ -15,7 +15,6 @@ void update(int o, int l, int r)
 		else update(o << 1|1, mid + 1, r);
 		maxv[o] = max(maxv[o << 1], maxv[o << 1|1]);
 	}
-	//printf("update(o = %d, l = %d, r = %d, maxv = %d)\n", o, l, r, maxv[o]);
 }
 
 int query(int o, int l, int r)

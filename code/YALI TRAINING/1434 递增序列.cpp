@@ -60,5 +60,5 @@ int main(){
 			maxx=ans[i][len],ANS=i;
 	printf("%d\n",ans[ANS][len]);
 	solve(ANS,len);
-} 
+}
 				
